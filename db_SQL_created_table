@@ -1,0 +1,63 @@
+--問題セット
+CREATE TABLE public.questions_set
+(
+    id integer NOT NULL DEFAULT nextval('questions_set_id_seq'::regclass),
+    questions_name text COLLATE pg_catalog."default",
+    questions_set_created_time timestamp without time zone,
+    CONSTRAINT questions_set_pkey PRIMARY KEY (id)
+);
+
+--問題
+CREATE TABLE public.questions
+(
+    id integer NOT NULL DEFAULT nextval('questions_id_seq'::regclass),
+    questions_set_id integer,
+    question_txt text COLLATE pg_catalog."default",
+    question_created_time timestamp without time zone,
+    CONSTRAINT questions_pkey PRIMARY KEY (id),
+    CONSTRAINT questions_questions_set_id_fkey FOREIGN KEY (questions_set_id)
+        REFERENCES public.questions_set (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+--選択肢
+CREATE TABLE public.choices
+(
+    id integer NOT NULL DEFAULT nextval('choices_id_seq'::regclass),
+    question_id integer,
+    display_name text COLLATE pg_catalog."default",
+    display_order integer,
+    CONSTRAINT choices_pkey PRIMARY KEY (id),
+    CONSTRAINT choices_question_id_fkey FOREIGN KEY (question_id)
+        REFERENCES public.questions (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+--回答セット
+CREATE TABLE public.answers_set
+(
+    id integer NOT NULL DEFAULT nextval('answers_set_id_seq'::regclass),
+    questions_set_id integer,
+    start_time timestamp without time zone,
+    end_time timestamp without time zone,
+    answer_created_time timestamp without time zone,
+    CONSTRAINT answers_set_pkey PRIMARY KEY (id),
+    CONSTRAINT answers_set_questions_set_id_fkey FOREIGN KEY (questions_set_id)
+        REFERENCES public.questions_set (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+--回答
+CREATE TABLE public.answers
+(
+    id integer NOT NULL DEFAULT nextval('answer_id_seq'::regclass),
+    answers_set_id integer,
+    question_id integer,
+    correct_answer boolean,
+    choices_id integer,
+    answered_time timestamp without time zone,
+    CONSTRAINT answer_pkey PRIMARY KEY (id)
+);
